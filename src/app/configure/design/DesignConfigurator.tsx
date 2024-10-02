@@ -2,7 +2,7 @@
 
 import HandleComponent from "@/components/HandleComponent";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -11,7 +11,9 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Label } from "@/components/ui/label";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { useToast } from "@/components/ui/use-toast";
 import { BASE_PRICE } from "@/config/products";
+import { useUploadThing } from "@/lib/uploadthing";
 import { cn, formatPrice } from "@/lib/utils";
 import {
   COLORS,
@@ -20,11 +22,13 @@ import {
   MODELS,
 } from "@/validators/option-validator";
 import { RadioGroup } from "@headlessui/react";
+import { useMutation } from "@tanstack/react-query";
 import { ArrowRight, Check, ChevronsUpDown } from "lucide-react";
 import NextImage from "next/image";
 import { useRouter } from "next/navigation";
 import { useRef, useState } from "react";
 import { Rnd } from "react-rnd";
+import { saveConfig as _saveConfig, SaveConfigArgs } from "./actions";
 
 interface DesignConfiguratorProps {
   configId: string;
@@ -38,6 +42,25 @@ const DesignConfigurator = ({
   imageDimensions,
 }: DesignConfiguratorProps) => {
   const router = useRouter();
+  const { toast } = useToast();
+
+  // saving data
+  const { mutate: SaveConfig } = useMutation({
+    mutationKey: ["save-config"],
+    mutationFn: async (args: SaveConfigArgs) => {
+      await Promise.all([saveConfiguration(), _saveConfig(args)]);
+    },
+    onError: () => {
+      toast({
+        title: "Something went wrong",
+        description: "There was an error on our end. Please try again.",
+        variant: "destructive",
+      });
+    },
+    onSuccess: () => {
+      router.push(`/configure/preview?id=${configId}`);
+    },
+  });
 
   const [options, setOptions] = useState<{
     color: (typeof COLORS)[number];
@@ -63,6 +86,8 @@ const DesignConfigurator = ({
 
   const phoneCaseRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
+
+  const { startUpload } = useUploadThing("imageUploader");
 
   async function saveConfiguration() {
     try {
@@ -91,10 +116,53 @@ const DesignConfigurator = ({
 
       const userImage = new Image();
       userImage.crossOrigin = "anonymous";
-      userImage.src = imageUrl
+      userImage.src = imageUrl;
+      await new Promise((resolve) => (userImage.onload = resolve)); //Awaiting the image
 
+      ctx?.drawImage(
+        userImage,
+        actualX,
+        actualY,
+        renderedDimension.width,
+        renderedDimension.height
+      );
 
-    } catch (err) {}
+      //Converting the canvas
+      const base64 = canvas.toDataURL();
+      //Splitting up the first string and getting the string that is needed
+      const base64Data = base64.split(",")[1];
+
+      //Converting to image
+      const blob = base64ToBlob(base64Data, "image/png");
+      //Convert it to actual file
+      const file = new File([blob], "filename.png", { type: "image/png" });
+
+      await startUpload([file], { configId });
+    } catch (err) {
+      toast({
+        title: "Something went wrong",
+        description:
+          "There was a problem saving your config, please try again.",
+        variant: "destructive",
+      });
+    }
+  }
+
+  function base64ToBlob(base64: string, mimeType: string) {
+    //converting base64 to individual bytes
+    const byteCharacters = atob(base64);
+
+    const byteNumbers = new Array(byteCharacters.length);
+
+    for (let i = 0; i < byteCharacters.length; i++) {
+      byteNumbers[i] = byteCharacters.charCodeAt(i);
+    }
+
+    //Convert it to Uint8array
+    const byteArray = new Uint8Array(byteNumbers);
+
+    //Convert it to blob
+    return new Blob([byteArray], { type: mimeType });
   }
 
   return (
@@ -327,7 +395,18 @@ const DesignConfigurator = ({
                 )}
               </p>
 
-              <Button size="sm" className="w-full">
+              <Button
+                onClick={() =>
+                  SaveConfig({
+                    configId,
+                    color: options.color.value,
+                    finish: options.finish.value,
+                    material: options.material.value,
+                    model: options.model.value,
+                  })
+                }
+                size="sm"
+                className="w-full">
                 Continue
                 <ArrowRight className="h-4 w-4 ml-1.5 inline" />
               </Button>
