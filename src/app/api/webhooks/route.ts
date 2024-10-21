@@ -13,14 +13,25 @@ export async function POST(req: Request) {
       return new Response("Invalid signature", { status: 400 });
     }
 
-    const event = stripe.webhooks.constructEvent(
-      body,
-      signature,
-      process.env.STRIPE_WEBOOK_SECRET!
-    );
+    console.log("Received signature:", signature);
+    console.log("Webhook secret:", process.env.STRIPE_WEBHOOK_SECRET);
+
+    const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
+    if (!webhookSecret) {
+      console.error("Stripe webhook secret is not defined");
+      return new Response("Webhook secret missing", { status: 500 });
+    }
+
+    let event;
+    try {
+      event = stripe.webhooks.constructEvent(body, signature, webhookSecret);
+    } catch (err) {
+      console.error("Error verifying Stripe signature", err);
+      return new Response("Webhook Error", { status: 400 });
+    }
 
     if (event.type === "checkout.session.completed") {
-      if (!event?.data?.object?.customer_details?.email) {
+      if (!event.data.object.customer_details?.email) {
         throw new Error("Missing user email");
       }
     }
@@ -70,7 +81,7 @@ export async function POST(req: Request) {
 
     return NextResponse.json({ result: event, ok: true });
   } catch (error) {
-    console.error(error);
+    console.error("Webhook error", error);
 
     return NextResponse.json(
       { message: "Something went wrong", ok: false },
