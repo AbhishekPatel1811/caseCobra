@@ -40,15 +40,15 @@ const PhonePreview = ({
   if (color === "emerald") caseBackgroundColor = "bg-emerald-900";
 
   return (
-    //Ratio -> dimensions of the image
+    //Ratio -> dimensions of the  in x and y axis
     <AspectRatio ref={ref} ratio={3000 / 2001} className="relative">
       <div
         className="absolute z-20 scale-[1.0352]"
         style={{
-          // width/2 -> 50%  (1216- offset, 121- width of the image)
+          // width/2 -> 50%  (1200- offset, 121- width of the image)
           left:
             renderedDimensions.width / 2 -
-            renderedDimensions.width / (1216 / 121),
+            renderedDimensions.width / (1200 / 121),
           top: renderedDimensions.height / 6.22,
         }}>
         <img
