@@ -2,7 +2,7 @@
 
 Built with the Next.js 14 App Router, PostgreSQL, TypeScript, Tailwind CSS & Kinde Auth
 
-![Project Image](public/snake-1.png)
+<img src="public/snake-1.png" alt="Project Image" width="400"/>
 
 CaseCobra is a state-of-the-art, full-stack e-commerce store that allows customers to design, preview, and purchase custom phone cases. This project leverages Next.js 14’s powerful App Router, TypeScript, PostgreSQL, and other modern technologies to create a sleek, intuitive user experience.
 
@@ -10,7 +10,6 @@ CaseCobra is a state-of-the-art, full-stack e-commerce store that allows custome
 
 - **🛠️ Full-Stack Store** – Built from scratch in Next.js 14.
 - **💻 Sleek Landing Page** – An engaging home page for customer attraction.
-- **🎨 Custom Artworks** – Unique designs crafted by a professional illustrator.
 - **💳 Admin Dashboard** – A hidden dashboard for secure order management.
 - **🖥️ Drag-and-Drop File Uploads** – Intuitive file upload experience.
 - **🛒 Phone Case Configurator** – Customize phone cases interactively.
@@ -20,8 +19,6 @@ CaseCobra is a state-of-the-art, full-stack e-commerce store that allows custome
 - **⌨️ Written in TypeScript** – Type-safe code for a robust experience.
 - **🌟 ...and much more!**
 
-## 🛠️ Getting Started
-
 ### Prerequisites
 
 Make sure you have the following installed:
@@ -30,6 +27,7 @@ Make sure you have the following installed:
 - **PostgreSQL** database connection configured
 - Stripe and Kinde API credentials
 
+## 🛠️ Getting Started
 ### Installation
 
 First, clone the repository and install dependencies:
