@@ -29,6 +29,13 @@ const DesignPreview = ({ configuration }: { configuration: Configuration }) => {
     setShowConfetti(true);
   }, []);
 
+  useEffect(() => {
+    // Close login modal if user is logged in
+    if (user) {
+      setIsLoginModalOpen(false);
+    }
+  }, [user]);
+
   const { color, model, finish, material } = configuration;
 
   const tw = COLORS.find(
