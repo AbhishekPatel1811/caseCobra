@@ -12,10 +12,10 @@ export async function GET(
   console.log(`Kinde Auth Route: ${params.kindeAuth}`);
   console.log(`Request URL: ${request.url}`);
   try {
-    const response = await handleAuth(request, params.kindeAuth);
+    const response = await handleAuth();
     // handleAuth returns a function, not a response object
     // So we need to call it with the request and response
-    const result = await response(request, {});
+    const result = await response;
     console.log(`Auth result received`);
     return result;
   } catch (error) {
