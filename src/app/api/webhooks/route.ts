@@ -43,9 +43,7 @@ export async function POST(req: Request) {
       const shippingAddress = session.shipping_details!.address;
 
       const updatedOrder = await db.order.update({
-        where: {
-          id: orderId,
-        },
+        where: { id: orderId },
         data: {
           isPaid: true,
           shippingAddress: {
@@ -55,7 +53,7 @@ export async function POST(req: Request) {
               country: shippingAddress!.country!,
               postalCode: shippingAddress!.postal_code!,
               street: shippingAddress!.line1!,
-              state: shippingAddress!.state,
+              state: shippingAddress!.state!,
             },
           },
           billingAddress: {
@@ -65,46 +63,36 @@ export async function POST(req: Request) {
               country: billingAddress!.country!,
               postalCode: billingAddress!.postal_code!,
               street: billingAddress!.line1!,
-              state: billingAddress!.state,
+              state: billingAddress!.state!,
             },
           },
         },
       });
 
-      try {
-        const recipientEmail = event.data.object.customer_details.email;
-        console.log("Sending email to:", recipientEmail);
-
-        await resend.emails.send({
-          from: "CaseCobra <patelabhishek1811@gmail.com>",
-          to: [event.data.object.customer_details.email],
-          subject: "Thanks for your order!",
-          react: OrderReceivedEmail({
-            orderId,
-            orderDate: updatedOrder.createdAt.toLocaleDateString(),
-            // @ts-ignore
-            shippingAddress: {
-              name: session.customer_details!.name!,
-              city: shippingAddress!.city!,
-              country: shippingAddress!.country!,
-              postalCode: shippingAddress!.postal_code!,
-              street: shippingAddress!.line1!,
-              state: shippingAddress!.state,
-            },
-          }),
-        });
-      } catch (error) {
-        console.log("Email error", error);
-        return NextResponse.json(
-          { message: "Something went wrong with the email" },
-          { status: 500 }
-        );
-      }
+      await resend.emails.send({
+        from: "onboarding@resend.dev",
+        to: [event.data.object.customer_details.email],
+        subject: "Thanks for your order!",
+        react: OrderReceivedEmail({
+          orderId,
+          orderDate: updatedOrder.createdAt.toLocaleDateString(),
+          // @ts-ignore
+          shippingAddress: {
+            name: session.customer_details!.name!,
+            city: shippingAddress!.city!,
+            country: shippingAddress!.country!,
+            postalCode: shippingAddress!.postal_code!,
+            street: shippingAddress!.line1!,
+            state: shippingAddress!.state!,
+          },
+        }),
+      });
     }
 
     return NextResponse.json({ result: event, ok: true });
-  } catch (err) {
-    console.error(err);
+  } catch (error) {
+    console.error(error);
+    //send this to sentry (error handling tools)
 
     return NextResponse.json(
       { message: "Something went wrong", ok: false },
