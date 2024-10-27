@@ -40,6 +40,40 @@ const DesignPreview = ({ configuration }: { configuration: Configuration }) => {
     }
   }, [user]);
 
+  const [isLoading, setIsLoading] = useState(true);
+  const [authError, setAuthError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const fetchedUser = await getUser();
+        console.log("Fetched user:", fetchedUser);
+        
+        if (!fetchedUser) {
+          // If user is null, try to fetch from the server
+          const response = await fetch('/api/auth/user');
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+          }
+          const data = await response.json();
+          console.log("Server-side user data:", data);
+        }
+        
+        setIsLoading(false);
+      } catch (error: unknown) {
+        console.error("Error fetching user:", error);
+        if (error instanceof Error) {
+          setAuthError(error.message);
+        } else {
+          setAuthError("An unknown error occurred");
+        }
+        setIsLoading(false);
+      }
+    };
+
+    fetchUser();
+  }, [getUser]);
+
   const { color, model, finish, material } = configuration;
 
   const tw = COLORS.find(
@@ -72,11 +106,30 @@ const DesignPreview = ({ configuration }: { configuration: Configuration }) => {
   });
 
   const handleCheckout = () => {
+    if (isLoading) {
+      toast({
+        title: "Please wait",
+        description: "We're checking your login status.",
+        variant: "default",
+      });
+      return;
+    }
+
+    if (authError) {
+      toast({
+        title: "Authentication Error",
+        description: "There was an error with authentication. Please try logging in again.",
+        variant: "destructive",
+      });
+      setIsLoginModalOpen(true);
+      return;
+    }
+
     if (user) {
-      //Create payment session
+      // Create payment session
       createPaymentSession({ configId: id });
     } else {
-      //need to login
+      // Need to login
       localStorage.setItem("configurationId", id);
       setIsLoginModalOpen(true);
     }
@@ -182,6 +235,8 @@ const DesignPreview = ({ configuration }: { configuration: Configuration }) => {
           </div>
         </div>
       </div>
+      {isLoading && <p>Loading user data...</p>}
+      {authError && <p>Error: {authError}</p>}
     </>
   );
 };
