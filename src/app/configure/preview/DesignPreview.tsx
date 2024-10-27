@@ -20,8 +20,12 @@ const DesignPreview = ({ configuration }: { configuration: Configuration }) => {
   const router = useRouter();
   const { toast } = useToast();
   const { id } = configuration;
-  const { user } = useKindeBrowserClient();
   const [isLoginModalOpen, setIsLoginModalOpen] = useState<boolean>(false);
+  const { user, getUser } = useKindeBrowserClient();
+  const alsoUser = getUser();
+
+  console.log("user", user);
+  console.log("get User", alsoUser);
 
   const [showConfetti, setShowConfetti] = useState<boolean>(false);
 
