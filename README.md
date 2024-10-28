@@ -25,7 +25,7 @@ Make sure you have the following installed:
 
 - **Node.js** and **npm**
 - **PostgreSQL** database connection configured
-- Stripe and Kinde API credentials
+- **Stripe** and **Kinde** API credentials
 
 ## 🛠️ Getting Started
 ### Installation
@@ -52,8 +52,6 @@ bun dev
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
-
 ## Learn More
 
 To dive deeper into the technologies and concepts behind CaseCobra, explore the following resources:
@@ -63,11 +61,7 @@ To dive deeper into the technologies and concepts behind CaseCobra, explore the 
 - [Tailwind CSS Documentation](https://tailwindcss.com/docs) - Utility-first CSS framework for rapid UI development.
 - [shadcn-ui](https://ui.shadcn.com) - Collection of beautifully crafted UI components for React.
 
----
 
-## 🌟 Acknowledgements
-
-Special thanks to all contributors and the open-source community.
 
 
 
