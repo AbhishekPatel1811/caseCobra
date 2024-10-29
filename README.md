@@ -2,9 +2,9 @@
 
 Built with the Next.js 14 App Router, PostgreSQL, TypeScript, Tailwind CSS & Kinde Auth
 
-<img src="public/snake-1.png" alt="Project Image" width="400"/>
+<img src="public/thumbnail.png" alt="Project Image" width="900"/>
 
-CaseCobra is a state-of-the-art, full-stack e-commerce store that allows customers to design, preview, and purchase custom phone cases. This project leverages Next.js 14’s powerful App Router, TypeScript, PostgreSQL, and other modern technologies to create a sleek, intuitive user experience.
+#### CaseCobra is a state-of-the-art, full-stack e-commerce store that allows customers to design, preview, and purchase custom phone cases. This project leverages Next.js 14’s powerful App Router, TypeScript, PostgreSQL, and other modern technologies to create a sleek, intuitive user experience.
 
 ## ✨ Features
 
